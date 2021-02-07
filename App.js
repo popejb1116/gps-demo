@@ -4,12 +4,14 @@ import { Platform, Text, View, StyleSheet } from 'react-native';
 import * as Location from 'expo-location';
 import styled, { ThemeProvider } from 'styled-components/native';
 
+// GLOBAL THEME PROP FOR USE IN STYLED COMPONENTS
 const theme = {
    primary: 'rgba(23, 80, 54, 1.0)',
    accent: 'rgba(193, 175, 108, 1.0)',
    error: 'rgba(255, 0, 0, 0.8)',
 };
 
+// ERROR COMPONENT
 const ErrorComp = ({ error }) => {
    return (
       <ErrorView>
@@ -18,6 +20,7 @@ const ErrorComp = ({ error }) => {
    );
 };
 
+// LOCATION COMPONENT
 const LocationServiceComp = ({ location }) => {
    return (
       <LocationView>
@@ -30,6 +33,7 @@ const App = () => {
    const [location, setLocation] = useState();
    const [error, setError] = useState(false);
 
+   // GETS LOCATION AND SETS CORRESPONDING STATE
    const getOrUpdateLocation = async () => {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
@@ -43,6 +47,7 @@ const App = () => {
             setError(`Permission to access location was denied`);
             return;
          }
+         // IF STATUS IS GRANTED ATTEMPT LOCATION
          getOrUpdateLocation();
       })();
    }, []);
@@ -60,6 +65,7 @@ const App = () => {
    );
 };
 
+// GLOBAL APP WRAPPER
 const AppView = styled.View`
    flex: 1;
    background: ${({ theme }) => theme.primary}
@@ -77,7 +83,6 @@ const ErrorView = styled.View`
    padding: 5%;
    border-radius: 8px;
 `;
-
 const ErrorText = styled.Text`
    color: white;
 `;
@@ -93,7 +98,6 @@ const LocationView = styled.View`
    border: white;
    border-radius: 8px;
 `;
-
 const LocationText = styled.Text`
    color: white;
 `;
