@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, Text, View, StyleSheet } from 'react-native';
+import { Platform, Text, View, StyleSheet, Button } from 'react-native';
 import * as Location from 'expo-location';
 import styled, { ThemeProvider } from 'styled-components/native';
 
@@ -33,10 +33,24 @@ const App = () => {
    const [location, setLocation] = useState();
    const [error, setError] = useState(false);
 
+   const timer = useRef();
+
    // GETS LOCATION AND SETS CORRESPONDING STATE
    const getOrUpdateLocation = async () => {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
+   };
+
+   const startTakingMeasurements = () => {
+      console.log(`startTakingMeasurements called!!!`);
+      timer.current = setInterval(() => {
+         getOrUpdateLocation();
+      }, 1000);
+   };
+
+   const stopTakingMeasurements = () => {
+      console.log(`stopTakingMeasurements called!!!`);
+      clearInterval(timer.current);
    };
 
    useEffect(() => {
@@ -58,7 +72,15 @@ const App = () => {
             {error ? (
                <ErrorComp error={error} />
             ) : (
-               <LocationServiceComp location={location} />
+               <>
+                  <LocationServiceComp location={location} />
+                  <Button title='start' onPress={startTakingMeasurements}>
+                     START
+                  </Button>
+                  <Button title='stop' onPress={stopTakingMeasurements}>
+                     STOP
+                  </Button>
+               </>
             )}
          </AppView>
       </ThemeProvider>
