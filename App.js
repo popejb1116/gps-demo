@@ -33,56 +33,58 @@ const App = () => {
    const [location, setLocation] = useState();
    const [error, setError] = useState(false);
 
-   // TIMER REF USED TO START AND STOP READING SEQUENCE
-   const timer = useRef();
-
-   // const startTakingMeasurements = () => {
-   //    console.log(`startTakingMeasurements called!!!`);
-   //    timer.current = setInterval(() => {
-   //       getOrUpdateLocation();
-   //    }, 1000);
-   // };
-
-   // const stopTakingMeasurements = () => {
-   //    console.log(`stopTakingMeasurements called!!!`);
-   //    clearInterval(timer.current);
-   // };
-
-   // GETS LOCATION AND SETS CORRESPONDING STATE
-   // const getOrUpdateLocation = async () => {
-   //    let location = await Location.getCurrentPositionAsync({});
-   //    setLocation(location);
-   // };
+   const handleGetCurrentPosition = async () => {
+      console.log('HANDLE GET CURRENT POSITION');
+      try {
+         let location = await Location.getCurrentPositionAsync({});
+         console.log(location);
+         setLocation(location);
+      } catch (error) {
+         console.log('GET CURRENT POSITION ERROR');
+         console.log(error);
+      }
+   };
 
    // START/STOP WATCH LOCATION
-   const handleWatchPosition = async () => {
-      console.log(`handleWatchPosition`);
-      let options = {
-         accuracy: Location.Accuracy.Highest,
-         timeInterval: 500,
-         distanceInterval: 0,
-         mayShowUserSettingsDialog: false,
-      };
-      let subscription = await Location.watchPositionAsync(
-         options,
-         (location) => {
-            console.log(`WATCH POSITION CALLBACK`);
-            console.log(location);
-         }
-      );
-      setLocation(location);
+   const handleWatchPosition = async (action) => {
+      console.log('HANDLE WATCH POSITION');
+
+      switch (action) {
+         case 'start':
+            console.log('CREATE LOCATION SUBSCRIPTION');
+            break;
+         case 'stop':
+            console.log('TERMINATE LOCATION SUBSCRIPTION');
+            break;
+         default:
+            console.log('UNKNOWN ACTION');
+            break;
+      }
+      // let options = {
+      //    accuracy: Location.Accuracy.Highest,
+      //    timeInterval: 500,
+      //    distanceInterval: 0,
+      //    mayShowUserSettingsDialog: false,
+      // };
+      // let subscription = await Location.watchPositionAsync(
+      //    options,
+      //    (location) => {
+      //       console.log(`WATCH POSITION CALLBACK`);
+      //       console.log(location);
+      //       setLocation(location);
+      //    }
+      // );
    };
 
    useEffect(() => {
       // REQUEST PERMISSION STATUS
+      // TODO: CONVERT TO NAMED FUNC FOR READABILITY
       (async () => {
          let { status } = await Location.requestPermissionsAsync();
-         if (status !== `granted`) {
-            setError(`Permission to access location was denied`);
+         if (status !== 'granted') {
+            setError('Permission to access location was denied');
             return;
          }
-         // IF STATUS IS GRANTED ATTEMPT LOCATION
-         //getOrUpdateLocation();
       })();
    }, []);
 
@@ -94,12 +96,18 @@ const App = () => {
             ) : (
                <>
                   <LocationServiceComp location={location} />
-                  <Button title='start' onPress={() => handleWatchPosition()}>
-                     START
-                  </Button>
-                  <Button title='stop' onPress={() => handleWatchPosition()}>
-                     STOP
-                  </Button>
+                  <Button
+                     title='start'
+                     onPress={() => handleWatchPosition('start')}
+                  />
+                  <Button
+                     title='stop'
+                     onPress={() => handleWatchPosition('stop')}
+                  />
+                  <Button
+                     title='single req'
+                     onPress={handleGetCurrentPosition}
+                  />
                </>
             )}
          </AppView>
