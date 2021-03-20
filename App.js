@@ -33,24 +33,44 @@ const App = () => {
    const [location, setLocation] = useState();
    const [error, setError] = useState(false);
 
+   // TIMER REF USED TO START AND STOP READING SEQUENCE
    const timer = useRef();
 
+   // const startTakingMeasurements = () => {
+   //    console.log(`startTakingMeasurements called!!!`);
+   //    timer.current = setInterval(() => {
+   //       getOrUpdateLocation();
+   //    }, 1000);
+   // };
+
+   // const stopTakingMeasurements = () => {
+   //    console.log(`stopTakingMeasurements called!!!`);
+   //    clearInterval(timer.current);
+   // };
+
    // GETS LOCATION AND SETS CORRESPONDING STATE
-   const getOrUpdateLocation = async () => {
-      let location = await Location.getCurrentPositionAsync({});
+   // const getOrUpdateLocation = async () => {
+   //    let location = await Location.getCurrentPositionAsync({});
+   //    setLocation(location);
+   // };
+
+   // START/STOP WATCH LOCATION
+   const handleWatchPosition = async () => {
+      console.log(`handleWatchPosition`);
+      let options = {
+         accuracy: Location.Accuracy.Highest,
+         timeInterval: 500,
+         distanceInterval: 0,
+         mayShowUserSettingsDialog: false,
+      };
+      let subscription = await Location.watchPositionAsync(
+         options,
+         (location) => {
+            console.log(`WATCH POSITION CALLBACK`);
+            console.log(location);
+         }
+      );
       setLocation(location);
-   };
-
-   const startTakingMeasurements = () => {
-      console.log(`startTakingMeasurements called!!!`);
-      timer.current = setInterval(() => {
-         getOrUpdateLocation();
-      }, 1000);
-   };
-
-   const stopTakingMeasurements = () => {
-      console.log(`stopTakingMeasurements called!!!`);
-      clearInterval(timer.current);
    };
 
    useEffect(() => {
@@ -62,7 +82,7 @@ const App = () => {
             return;
          }
          // IF STATUS IS GRANTED ATTEMPT LOCATION
-         getOrUpdateLocation();
+         //getOrUpdateLocation();
       })();
    }, []);
 
@@ -74,10 +94,10 @@ const App = () => {
             ) : (
                <>
                   <LocationServiceComp location={location} />
-                  <Button title='start' onPress={startTakingMeasurements}>
+                  <Button title='start' onPress={() => handleWatchPosition()}>
                      START
                   </Button>
-                  <Button title='stop' onPress={stopTakingMeasurements}>
+                  <Button title='stop' onPress={() => handleWatchPosition()}>
                      STOP
                   </Button>
                </>
