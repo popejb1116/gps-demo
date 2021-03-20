@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, Text, View, StyleSheet, Button } from 'react-native';
+import {
+   Platform,
+   Text,
+   View,
+   StyleSheet,
+   TouchableOpacity,
+} from 'react-native';
 import * as Location from 'expo-location';
 import styled, { ThemeProvider } from 'styled-components/native';
 
@@ -130,17 +136,17 @@ const App = () => {
                   </DashboardView>
                   <ControlPanelView>
                      {subscriptionActive ? (
-                        <Button
+                        <StopButton
                            title='stop'
                            onPress={() => handleWatchPosition('stop')}
                         />
                      ) : (
-                        <Button
+                        <StartButton
                            title='start'
                            onPress={() => handleWatchPosition('start')}
                         />
                      )}
-                     <Button
+                     <SingleCallButton
                         title='single req'
                         onPress={handleGetCurrentPosition}
                      />
@@ -193,12 +199,31 @@ const LocationText = styled.Text`
 const ControlPanelView = styled.View`
    display: flex;
    flex-flow: row nowrap;
-   justify-content: flex-start;
-   align-items: flex-start;
+   justify-content: space-around;
+   align-items: center;
    height: 45%;
    width: 90%;
    border: ${({ theme }) => theme.accent};
    border-radius: 8px;
+`;
+
+const StartButton = styled.TouchableOpacity`
+   height: 50;
+   width: 50;
+   border-radius: 100;
+   background: green;
+`;
+const StopButton = styled.TouchableOpacity`
+   height: 50;
+   width: 50;
+   border-radius: 100;
+   background: red;
+`;
+const SingleCallButton = styled.TouchableOpacity`
+   height: 50;
+   width: 50;
+   border-radius: 100;
+   background: blue;
 `;
 
 export default App;
