@@ -22,6 +22,8 @@ const ErrorComp = ({ error }) => {
 
 // LOCATION COMPONENT
 const LocationServiceComp = ({ location }) => {
+   console.log('LOCATION SERVICE COMP');
+   console.log(location);
    return (
       <LocationView>
          <LocationText>{JSON.stringify(location)}</LocationText>
@@ -30,18 +32,27 @@ const LocationServiceComp = ({ location }) => {
 };
 
 const App = () => {
+   // OBJECT WHICH HOLDS THE LOCATION INFORMATION RETURNED FROM expo-location PACKAGE
    const [location, setLocation] = useState();
+   // GENERIC ERROR STATE FOR HOLDING ANY AND ALL ERRORS WHICH MAY OCCUR
    const [error, setError] = useState(false);
+   // HOLDS SUBCRIPTION TO LOCATION UPDATES
+   const locationSubscription = useRef();
 
+   // SINGLE CALL TO LOCATION SERVICE AND location STATE UPDATE
+   // KEPT JUST FOR TESTING AT THIS POINT BUT NOT NECESSARY
    const handleGetCurrentPosition = async () => {
       console.log('HANDLE GET CURRENT POSITION');
+      console.log(locationSubscription.current);
+      console.log('*****\n\n');
       try {
          let location = await Location.getCurrentPositionAsync({});
          console.log(location);
+         console.log('*****\n\n');
          setLocation(location);
       } catch (error) {
          console.log('GET CURRENT POSITION ERROR');
-         console.log(error);
+         setError(error);
       }
    };
 
@@ -51,29 +62,37 @@ const App = () => {
 
       switch (action) {
          case 'start':
+            // CREATE LOCATION SUBSCRIPTION AND GET REGULAR LOCATION UPDATES
             console.log('CREATE LOCATION SUBSCRIPTION');
+            console.log('*****\n\n');
+            // OPTIONS PASSED WHEN MAKING SUBSCRIPTION
+            let options = {
+               accuracy: Location.Accuracy.BestForNavigation,
+               timeInterval: 1000, // ms
+               distanceInterval: 0, //
+               mayShowUserSettingsDialog: false, // ANDROID ONLY - REQ ADDITIONAL HARDWARE FOR BETTER ACCURACY
+            };
+            // ACTUAL SUBSCRIPTION TO LOCATION SERVICE
+            locationSubscription.current = await Location.watchPositionAsync(
+               options,
+               (location) => {
+                  console.log(`LOCATION CALLBACK`);
+                  console.log(location);
+                  console.log('*****\n\n');
+                  setLocation(location);
+               }
+            );
             break;
          case 'stop':
+            // CANCEL SUBSCRIPTION AND STOP GETTING LOCATION UPDATES
             console.log('TERMINATE LOCATION SUBSCRIPTION');
+            console.log('*****\n\n');
+            locationSubscription.current.remove();
             break;
          default:
             console.log('UNKNOWN ACTION');
             break;
       }
-      // let options = {
-      //    accuracy: Location.Accuracy.Highest,
-      //    timeInterval: 500,
-      //    distanceInterval: 0,
-      //    mayShowUserSettingsDialog: false,
-      // };
-      // let subscription = await Location.watchPositionAsync(
-      //    options,
-      //    (location) => {
-      //       console.log(`WATCH POSITION CALLBACK`);
-      //       console.log(location);
-      //       setLocation(location);
-      //    }
-      // );
    };
 
    useEffect(() => {
