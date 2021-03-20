@@ -24,6 +24,7 @@ const ErrorComp = ({ error }) => {
 const LocationServiceComp = ({ location }) => {
    console.log('LOCATION SERVICE COMP');
    console.log(location);
+
    return (
       <LocationView>
          <LocationText>{JSON.stringify(location)}</LocationText>
@@ -33,7 +34,7 @@ const LocationServiceComp = ({ location }) => {
 
 const App = () => {
    // OBJECT WHICH HOLDS THE LOCATION INFORMATION RETURNED FROM expo-location PACKAGE
-   const [location, setLocation] = useState();
+   const [location, setLocation] = useState(false);
    // GENERIC ERROR STATE FOR HOLDING ANY AND ALL ERRORS WHICH MAY OCCUR
    const [error, setError] = useState(false);
    // HOLDS SUBCRIPTION TO LOCATION UPDATES
@@ -67,7 +68,7 @@ const App = () => {
             console.log('*****\n\n');
             // OPTIONS PASSED WHEN MAKING SUBSCRIPTION
             let options = {
-               accuracy: Location.Accuracy.BestForNavigation,
+               accuracy: Location.Accuracy.Highest,
                timeInterval: 1000, // ms
                distanceInterval: 0, //
                mayShowUserSettingsDialog: false, // ANDROID ONLY - REQ ADDITIONAL HARDWARE FOR BETTER ACCURACY
@@ -114,7 +115,7 @@ const App = () => {
                <ErrorComp error={error} />
             ) : (
                <>
-                  <LocationServiceComp location={location} />
+                  {location && <LocationServiceComp location={location} />}
                   <Button
                      title='start'
                      onPress={() => handleWatchPosition('start')}
