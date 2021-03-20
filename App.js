@@ -39,9 +39,11 @@ const App = () => {
    const [error, setError] = useState(false);
    // HOLDS SUBCRIPTION TO LOCATION UPDATES
    const locationSubscription = useRef();
+   const [subscriptionActive, setSubscriptionActive] = useState(false);
 
    // SINGLE CALL TO LOCATION SERVICE AND location STATE UPDATE
    // KEPT JUST FOR TESTING AT THIS POINT BUT NOT NECESSARY
+   // TODO: UPDATE TO KILL ANY ACTIVE SUBSCRIPTIONS
    const handleGetCurrentPosition = async () => {
       console.log('HANDLE GET CURRENT POSITION');
       console.log(locationSubscription.current);
@@ -74,21 +76,29 @@ const App = () => {
                mayShowUserSettingsDialog: false, // ANDROID ONLY - REQ ADDITIONAL HARDWARE FOR BETTER ACCURACY
             };
             // ACTUAL SUBSCRIPTION TO LOCATION SERVICE
-            locationSubscription.current = await Location.watchPositionAsync(
-               options,
-               (location) => {
-                  console.log(`LOCATION CALLBACK`);
-                  console.log(location);
-                  console.log('*****\n\n');
-                  setLocation(location);
-               }
-            );
+            try {
+               locationSubscription.current = await Location.watchPositionAsync(
+                  options,
+                  (location) => {
+                     console.log(`LOCATION CALLBACK`);
+                     console.log(location);
+                     console.log('*****\n\n');
+                     setLocation(location);
+                     setSubscriptionActive(true);
+                  }
+               );
+            } catch (error) {
+               console.log('GET LOCATION SUBSCRIPTION ERROR');
+               setError(error);
+            }
+
             break;
          case 'stop':
             // CANCEL SUBSCRIPTION AND STOP GETTING LOCATION UPDATES
             console.log('TERMINATE LOCATION SUBSCRIPTION');
             console.log('*****\n\n');
             locationSubscription.current.remove();
+            setSubscriptionActive(false);
             break;
          default:
             console.log('UNKNOWN ACTION');
@@ -115,19 +125,26 @@ const App = () => {
                <ErrorComp error={error} />
             ) : (
                <>
-                  {location && <LocationServiceComp location={location} />}
-                  <Button
-                     title='start'
-                     onPress={() => handleWatchPosition('start')}
-                  />
-                  <Button
-                     title='stop'
-                     onPress={() => handleWatchPosition('stop')}
-                  />
-                  <Button
-                     title='single req'
-                     onPress={handleGetCurrentPosition}
-                  />
+                  <DashboardView>
+                     {location && <LocationServiceComp location={location} />}
+                  </DashboardView>
+                  <ControlPanelView>
+                     {subscriptionActive ? (
+                        <Button
+                           title='stop'
+                           onPress={() => handleWatchPosition('stop')}
+                        />
+                     ) : (
+                        <Button
+                           title='start'
+                           onPress={() => handleWatchPosition('start')}
+                        />
+                     )}
+                     <Button
+                        title='single req'
+                        onPress={handleGetCurrentPosition}
+                     />
+                  </ControlPanelView>
                </>
             )}
          </AppView>
@@ -142,7 +159,6 @@ const AppView = styled.View`
    align-items: center;
    justify-content: center;
 `;
-
 const ErrorView = styled.View`
    display: flex;
    justify-content: center;
@@ -156,13 +172,16 @@ const ErrorView = styled.View`
 const ErrorText = styled.Text`
    color: white;
 `;
-
-const LocationView = styled.View`
+const DashboardView = styled.View`
    display: flex;
    justify-content: center;
    align-items: center;
-   height: 50%;
-   width: 75%;
+   height: 45%;
+   width: 90%;
+   border: ${({ theme }) => theme.accent};
+   border-radius: 8px;
+`;
+const LocationView = styled.View`
    background: ${({ theme }) => theme.accent};
    padding: 5%;
    border: white;
@@ -170,6 +189,16 @@ const LocationView = styled.View`
 `;
 const LocationText = styled.Text`
    color: white;
+`;
+const ControlPanelView = styled.View`
+   display: flex;
+   flex-flow: row nowrap;
+   justify-content: flex-start;
+   align-items: flex-start;
+   height: 45%;
+   width: 90%;
+   border: ${({ theme }) => theme.accent};
+   border-radius: 8px;
 `;
 
 export default App;
