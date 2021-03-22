@@ -32,9 +32,21 @@ const LocationServiceComp = ({ location }) => {
    console.log(location);
 
    return (
-      <LocationView>
-         <LocationText>{JSON.stringify(location)}</LocationText>
-      </LocationView>
+      <>
+         <LocationView>
+            <LocationText infoType={'speed'}>
+               Speed: {location.coords.speed.toFixed(2)} M/s
+            </LocationText>
+         </LocationView>
+         <LocationView>
+            <LocationText>
+               Altitude: {location.coords.altitude.toFixed(2)} M (GWS 84)
+            </LocationText>
+         </LocationView>
+         <LocationView>
+            <LocationText>Timestamp: {Date(location.timestamp)}</LocationText>
+         </LocationView>
+      </>
    );
 };
 
@@ -149,7 +161,7 @@ const App = () => {
                         </ButtonToucOpac>
                      )}
                      <ButtonToucOpac onPress={handleGetCurrentPosition}>
-                        <ButtonText type='man'>MAN</ButtonText>
+                        <ButtonText type='single'>SINGLE READING</ButtonText>
                      </ButtonToucOpac>
                   </ControlPanelView>
                </>
@@ -181,21 +193,24 @@ const ErrorText = styled.Text`
 `;
 const DashboardView = styled.View`
    display: flex;
-   justify-content: center;
+   justify-content: space-around;
    align-items: center;
    height: 45%;
    width: 90%;
-   border: ${({ theme }) => theme.accent};
-   border-radius: 8px;
+   /* border: ${({ theme }) => theme.accent}; */
+   /* border-radius: 8px; */
 `;
+
 const LocationView = styled.View`
    background: ${({ theme }) => theme.accent};
+   width: 90%;
    padding: 5%;
    border: white;
    border-radius: 8px;
 `;
 const LocationText = styled.Text`
    color: white;
+   font-size: ${({ infoType }) => (infoType === 'speed' ? '35px' : '15px')};
 `;
 const ControlPanelView = styled.View`
    display: flex;
@@ -204,22 +219,24 @@ const ControlPanelView = styled.View`
    align-items: center;
    height: 45%;
    width: 90%;
-   border: ${({ theme }) => theme.accent};
-   border-radius: 8px;
+   /* border: ${({ theme }) => theme.accent}; */
+   /* border-radius: 8px; */
 `;
 
 const ButtonToucOpac = styled.TouchableOpacity`
    display: flex;
    justify-content: center;
    align-items: center;
-   height: 100;
-   width: 100;
-   border-radius: 200;
-   background: rgba(0, 0, 0, 0.75);
+   background: ${({ theme }) => theme.accent};
+   height: 150px;
+   width: 150px;
+   border-radius: 300px;
 `;
 const ButtonText = styled.Text`
    color: ${({ type }) =>
-      type === 'start' ? 'green' : type === 'stop' ? 'red' : 'blue'};
+      type === 'start' ? 'green' : type === 'stop' ? 'red' : 'white'};
    font-size: 25px;
+   font-weight: bold;
+   text-align: center;
 `;
 export default App;
