@@ -136,20 +136,21 @@ const App = () => {
                   </DashboardView>
                   <ControlPanelView>
                      {subscriptionActive ? (
-                        <StopButton
-                           title='stop'
+                        <ButtonToucOpac
                            onPress={() => handleWatchPosition('stop')}
-                        />
+                        >
+                           <ButtonText type='stop'>STOP</ButtonText>
+                        </ButtonToucOpac>
                      ) : (
-                        <StartButton
-                           title='start'
+                        <ButtonToucOpac
                            onPress={() => handleWatchPosition('start')}
-                        />
+                        >
+                           <ButtonText type='start'>START</ButtonText>
+                        </ButtonToucOpac>
                      )}
-                     <SingleCallButton
-                        title='single req'
-                        onPress={handleGetCurrentPosition}
-                     />
+                     <ButtonToucOpac onPress={handleGetCurrentPosition}>
+                        <ButtonText type='man'>MAN</ButtonText>
+                     </ButtonToucOpac>
                   </ControlPanelView>
                </>
             )}
@@ -207,23 +208,18 @@ const ControlPanelView = styled.View`
    border-radius: 8px;
 `;
 
-const StartButton = styled.TouchableOpacity`
-   height: 50;
-   width: 50;
-   border-radius: 100;
-   background: green;
+const ButtonToucOpac = styled.TouchableOpacity`
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100;
+   width: 100;
+   border-radius: 200;
+   background: rgba(0, 0, 0, 0.75);
 `;
-const StopButton = styled.TouchableOpacity`
-   height: 50;
-   width: 50;
-   border-radius: 100;
-   background: red;
+const ButtonText = styled.Text`
+   color: ${({ type }) =>
+      type === 'start' ? 'green' : type === 'stop' ? 'red' : 'blue'};
+   font-size: 25px;
 `;
-const SingleCallButton = styled.TouchableOpacity`
-   height: 50;
-   width: 50;
-   border-radius: 100;
-   background: blue;
-`;
-
 export default App;
