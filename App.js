@@ -90,7 +90,7 @@ const App = () => {
             let options = {
                accuracy: Location.Accuracy.Highest,
                timeInterval: 1000, // ms
-               distanceInterval: 0, //
+               distanceInterval: 1, // UPDATE EVERY METER
                mayShowUserSettingsDialog: false, // ANDROID ONLY - REQ ADDITIONAL HARDWARE FOR BETTER ACCURACY
             };
             // ACTUAL SUBSCRIPTION TO LOCATION SERVICE
