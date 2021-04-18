@@ -100,7 +100,7 @@ const App = () => {
 
       setTimeout(() => {
          setSplash(false);
-      }, 2000);
+      }, 3000);
    }, []);
 
    return (
@@ -109,28 +109,9 @@ const App = () => {
             {error ? (
                <ErrorComp error={error} />
             ) : splash ? (
-               // <FadeInView
-               //    style={{
-               //       width: 400,
-               //       height: 400,
-               //       backgroundColor: 'powderblue',
-               //    }}
-               // >
-               //    <SplashImg source={require('./images/splash.jpeg')} />
-               // </FadeInView>
                <SplashImage />
             ) : (
                <>
-                  {/* <SplashImage /> */}
-                  {/* <FadeInView
-                     style={{
-                        width: 400,
-                        height: 400,
-                        backgroundColor: 'powderblue',
-                     }}
-                  >
-                     <SplashImg source={require('./images/splash.jpeg')} />
-                  </FadeInView> */}
                   <DashboardView>
                      {location && <LocationServiceComp location={location} />}
                   </DashboardView>
