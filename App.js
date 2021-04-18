@@ -28,8 +28,8 @@ const ErrorComp = ({ error }) => {
 
 // LOCATION COMPONENT
 const LocationServiceComp = ({ location }) => {
-   console.log('LOCATION SERVICE COMP');
-   console.log(location);
+   // console.log('LOCATION SERVICE COMP');
+   // console.log(location);
 
    return (
       <>
@@ -59,12 +59,27 @@ const App = () => {
    const locationSubscription = useRef();
    const [subscriptionActive, setSubscriptionActive] = useState(false);
 
+   const locationTimerRef = useRef();
+
+   const start = () => {
+      console.log(`start`);
+      locationTimerRef.current = setInterval(() => {
+         // console.log(`interval`);
+         handleGetCurrentPosition();
+      }, 3000);
+   };
+
+   const stop = () => {
+      console.log(`stop`);
+      clearInterval(locationTimerRef.current);
+   };
+
    // SINGLE CALL TO LOCATION SERVICE AND location STATE UPDATE
    // KEPT JUST FOR TESTING AT THIS POINT BUT NOT NECESSARY
    // TODO: UPDATE TO KILL ANY ACTIVE SUBSCRIPTIONS
    const handleGetCurrentPosition = async () => {
       console.log('HANDLE GET CURRENT POSITION');
-      console.log(locationSubscription.current);
+      // console.log(locationSubscription.current);
       console.log('*****\n\n');
       try {
          let location = await Location.getCurrentPositionAsync({});
@@ -147,7 +162,7 @@ const App = () => {
                      {location && <LocationServiceComp location={location} />}
                   </DashboardView>
                   <ControlPanelView>
-                     {subscriptionActive ? (
+                     {/* {subscriptionActive ? (
                         <ButtonToucOpac
                            onPress={() => handleWatchPosition('stop')}
                         >
@@ -159,9 +174,15 @@ const App = () => {
                         >
                            <ButtonText type='start'>START</ButtonText>
                         </ButtonToucOpac>
-                     )}
-                     <ButtonToucOpac onPress={handleGetCurrentPosition}>
+                     )} */}
+                     {/* <ButtonToucOpac onPress={handleGetCurrentPosition}>
                         <ButtonText type='single'>SINGLE READING</ButtonText>
+                     </ButtonToucOpac> */}
+                     <ButtonToucOpac onPress={start}>
+                        <ButtonText type='single'>START</ButtonText>
+                     </ButtonToucOpac>
+                     <ButtonToucOpac onPress={stop}>
+                        <ButtonText type='single'>STOP</ButtonText>
                      </ButtonToucOpac>
                   </ControlPanelView>
                </>
