@@ -11,6 +11,7 @@ import {
 import * as Location from 'expo-location';
 import styled, { ThemeProvider } from 'styled-components/native';
 import { FadeInView } from './components/FadeInView';
+import { SplashImage } from './components/SplashImage';
 
 // GLOBAL THEME PROP FOR USE IN STYLED COMPONENTS
 const theme = {
@@ -50,7 +51,7 @@ const LocationServiceComp = ({ location }) => {
 };
 
 const App = () => {
-   const [splash, setSplash] = useState(false);
+   const [splash, setSplash] = useState(true);
    // OBJECT WHICH HOLDS THE LOCATION INFORMATION RETURNED FROM expo-location PACKAGE
    const [location, setLocation] = useState(false);
    // GENERIC ERROR STATE FOR HOLDING ANY AND ALL ERRORS WHICH MAY OCCUR
@@ -97,9 +98,9 @@ const App = () => {
       };
       callLocationAPI();
 
-      // setTimeout(() => {
-      //    setSplash(false);
-      // }, 2000);
+      setTimeout(() => {
+         setSplash(false);
+      }, 2000);
    }, []);
 
    return (
@@ -108,18 +109,20 @@ const App = () => {
             {error ? (
                <ErrorComp error={error} />
             ) : splash ? (
-               <FadeInView
-                  style={{
-                     width: 400,
-                     height: 400,
-                     backgroundColor: 'powderblue',
-                  }}
-               >
-                  <SplashImg source={require('./images/splash.jpeg')} />
-               </FadeInView>
+               // <FadeInView
+               //    style={{
+               //       width: 400,
+               //       height: 400,
+               //       backgroundColor: 'powderblue',
+               //    }}
+               // >
+               //    <SplashImg source={require('./images/splash.jpeg')} />
+               // </FadeInView>
+               <SplashImage />
             ) : (
                <>
-                  <FadeInView
+                  {/* <SplashImage /> */}
+                  {/* <FadeInView
                      style={{
                         width: 400,
                         height: 400,
@@ -127,21 +130,18 @@ const App = () => {
                      }}
                   >
                      <SplashImg source={require('./images/splash.jpeg')} />
-                  </FadeInView>
-                  {/* <DashboardView>
+                  </FadeInView> */}
+                  <DashboardView>
                      {location && <LocationServiceComp location={location} />}
                   </DashboardView>
                   <ControlPanelView>
-                     {!subscriptionActive ? (
-                        <ButtonToucOpac onPress={start}>
-                           <ButtonText type='single'>START</ButtonText>
-                        </ButtonToucOpac>
-                     ) : (
-                        <ButtonToucOpac onPress={stop}>
-                           <ButtonText type='single'>STOP</ButtonText>
-                        </ButtonToucOpac>
-                     )}
-                  </ControlPanelView> */}
+                     <ButtonToucOpac onPress={start}>
+                        <ButtonText type='single'>START</ButtonText>
+                     </ButtonToucOpac>
+                     <ButtonToucOpac onPress={stop}>
+                        <ButtonText type='single'>STOP</ButtonText>
+                     </ButtonToucOpac>
+                  </ControlPanelView>
                </>
             )}
          </AppView>
