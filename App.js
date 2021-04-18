@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
    Platform,
+   Image,
    Text,
    View,
    StyleSheet,
@@ -48,6 +49,7 @@ const LocationServiceComp = ({ location }) => {
 };
 
 const App = () => {
+   const [splash, setSplash] = useState(true);
    // OBJECT WHICH HOLDS THE LOCATION INFORMATION RETURNED FROM expo-location PACKAGE
    const [location, setLocation] = useState(false);
    // GENERIC ERROR STATE FOR HOLDING ANY AND ALL ERRORS WHICH MAY OCCUR
@@ -79,19 +81,24 @@ const App = () => {
 
    const stop = () => {
       console.log(`stop`);
-      setSubscriptionActive(false);
+      setSubscriptionActive(true);
       clearInterval(locationTimerRef.current);
    };
 
    useEffect(() => {
       // REQUEST PERMISSION STATUS
-      (async () => {
+      const callLocationAPI = async () => {
          let { status } = await Location.requestPermissionsAsync();
          if (status !== 'granted') {
             setError('Permission to access location was denied');
             return;
          }
-      })();
+      };
+      callLocationAPI();
+
+      setTimeout(() => {
+         setSplash(false);
+      }, 2000);
    }, []);
 
    return (
@@ -99,8 +106,15 @@ const App = () => {
          <AppView>
             {error ? (
                <ErrorComp error={error} />
+            ) : splash ? (
+               <SplashView>
+                  <SplashImg source={require('./images/splash.jpeg')} />
+               </SplashView>
             ) : (
                <>
+                  {/* <SplashView>
+                     <SplashImg source={require('./images/splash.jpeg')} />
+                  </SplashView> */}
                   <DashboardView>
                      {location && <LocationServiceComp location={location} />}
                   </DashboardView>
@@ -142,6 +156,21 @@ const ErrorView = styled.View`
 const ErrorText = styled.Text`
    color: white;
 `;
+const SplashView = styled.View`
+   display: flex;
+   justify-content: space-around;
+   align-items: center;
+   height: 99%;
+   width: 99%;
+   background: red;
+`;
+const SplashImg = styled.Image`
+   width: 300px;
+   height: 300px;
+   transform: translateY(20px);
+   opacity: 0.5;
+`;
+
 const DashboardView = styled.View`
    display: flex;
    justify-content: space-around;
@@ -149,7 +178,6 @@ const DashboardView = styled.View`
    height: 45%;
    width: 90%;
 `;
-
 const LocationView = styled.View`
    background: ${({ theme }) => theme.accent};
    width: 90%;
@@ -169,7 +197,6 @@ const ControlPanelView = styled.View`
    height: 45%;
    width: 90%;
 `;
-
 const ButtonToucOpac = styled.TouchableOpacity`
    display: flex;
    justify-content: center;
