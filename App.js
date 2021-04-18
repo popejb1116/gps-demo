@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import {
    Platform,
    Image,
@@ -10,7 +9,6 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import styled, { ThemeProvider } from 'styled-components/native';
-import { FadeInView } from './components/FadeInView';
 import { SplashImage } from './components/SplashImage';
 
 // GLOBAL THEME PROP FOR USE IN STYLED COMPONENTS
@@ -64,7 +62,9 @@ const App = () => {
    // SINGLE CALL TO LOCATION SERVICE AND location STATE UPDATE
    const getCurrentLocation = async () => {
       try {
-         let location = await Location.getCurrentPositionAsync({});
+         let location = await Location.getCurrentPositionAsync({
+            Accuracy: 'BestForNavigation',
+         });
          setLocation(location);
          // console.log('GET CURRENT LOCATION ERROR');
       } catch (error) {
@@ -74,15 +74,16 @@ const App = () => {
    };
 
    const start = () => {
-      console.log(`start`);
+      // console.log(`start`);
       setSubscriptionActive(true);
+      getCurrentLocation();
       locationTimerRef.current = setInterval(() => {
          getCurrentLocation();
-      }, 2500);
+      }, 2000);
    };
 
    const stop = () => {
-      console.log(`stop`);
+      // console.log(`stop`);
       setSubscriptionActive(true);
       clearInterval(locationTimerRef.current);
    };
