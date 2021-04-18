@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import styled, { ThemeProvider } from 'styled-components/native';
+import { FadeInView } from './components/FadeInView';
 
 // GLOBAL THEME PROP FOR USE IN STYLED COMPONENTS
 const theme = {
@@ -49,7 +50,7 @@ const LocationServiceComp = ({ location }) => {
 };
 
 const App = () => {
-   const [splash, setSplash] = useState(true);
+   const [splash, setSplash] = useState(false);
    // OBJECT WHICH HOLDS THE LOCATION INFORMATION RETURNED FROM expo-location PACKAGE
    const [location, setLocation] = useState(false);
    // GENERIC ERROR STATE FOR HOLDING ANY AND ALL ERRORS WHICH MAY OCCUR
@@ -96,9 +97,9 @@ const App = () => {
       };
       callLocationAPI();
 
-      setTimeout(() => {
-         setSplash(false);
-      }, 2000);
+      // setTimeout(() => {
+      //    setSplash(false);
+      // }, 2000);
    }, []);
 
    return (
@@ -107,15 +108,27 @@ const App = () => {
             {error ? (
                <ErrorComp error={error} />
             ) : splash ? (
-               <SplashView>
+               <FadeInView
+                  style={{
+                     width: 400,
+                     height: 400,
+                     backgroundColor: 'powderblue',
+                  }}
+               >
                   <SplashImg source={require('./images/splash.jpeg')} />
-               </SplashView>
+               </FadeInView>
             ) : (
                <>
-                  {/* <SplashView>
+                  <FadeInView
+                     style={{
+                        width: 400,
+                        height: 400,
+                        backgroundColor: 'powderblue',
+                     }}
+                  >
                      <SplashImg source={require('./images/splash.jpeg')} />
-                  </SplashView> */}
-                  <DashboardView>
+                  </FadeInView>
+                  {/* <DashboardView>
                      {location && <LocationServiceComp location={location} />}
                   </DashboardView>
                   <ControlPanelView>
@@ -128,7 +141,7 @@ const App = () => {
                            <ButtonText type='single'>STOP</ButtonText>
                         </ButtonToucOpac>
                      )}
-                  </ControlPanelView>
+                  </ControlPanelView> */}
                </>
             )}
          </AppView>
@@ -162,13 +175,11 @@ const SplashView = styled.View`
    align-items: center;
    height: 99%;
    width: 99%;
-   background: red;
+   background: lightgrey;
 `;
 const SplashImg = styled.Image`
    width: 300px;
    height: 300px;
-   transform: translateY(20px);
-   opacity: 0.5;
 `;
 
 const DashboardView = styled.View`
