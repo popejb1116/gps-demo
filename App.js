@@ -28,9 +28,6 @@ const ErrorComp = ({ error }) => {
 
 // LOCATION COMPONENT
 const LocationServiceComp = ({ location }) => {
-   // console.log('LOCATION SERVICE COMP');
-   // console.log(location);
-
    return (
       <>
          <LocationView>
@@ -55,93 +52,39 @@ const App = () => {
    const [location, setLocation] = useState(false);
    // GENERIC ERROR STATE FOR HOLDING ANY AND ALL ERRORS WHICH MAY OCCUR
    const [error, setError] = useState(false);
-   // HOLDS SUBCRIPTION TO LOCATION UPDATES
-   const locationSubscription = useRef();
+   // SIGNIFIES USER HAS PRESSED START/STOP AND IS ACTIVELY RECEIVING LOCATION UPDATES
    const [subscriptionActive, setSubscriptionActive] = useState(false);
-
+   // HOLDS TIMER WHICH CALLS LOCATION API
    const locationTimerRef = useRef();
+
+   // SINGLE CALL TO LOCATION SERVICE AND location STATE UPDATE
+   const getCurrentLocation = async () => {
+      try {
+         let location = await Location.getCurrentPositionAsync({});
+         setLocation(location);
+         // console.log('GET CURRENT LOCATION ERROR');
+      } catch (error) {
+         setError(error);
+         // console.log('GET CURRENT LOCATION ERROR');
+      }
+   };
 
    const start = () => {
       console.log(`start`);
+      setSubscriptionActive(true);
       locationTimerRef.current = setInterval(() => {
-         // console.log(`interval`);
-         handleGetCurrentPosition();
-      }, 3000);
+         getCurrentLocation();
+      }, 2500);
    };
 
    const stop = () => {
       console.log(`stop`);
+      setSubscriptionActive(false);
       clearInterval(locationTimerRef.current);
-   };
-
-   // SINGLE CALL TO LOCATION SERVICE AND location STATE UPDATE
-   // KEPT JUST FOR TESTING AT THIS POINT BUT NOT NECESSARY
-   // TODO: UPDATE TO KILL ANY ACTIVE SUBSCRIPTIONS
-   const handleGetCurrentPosition = async () => {
-      console.log('HANDLE GET CURRENT POSITION');
-      // console.log(locationSubscription.current);
-      console.log('*****\n\n');
-      try {
-         let location = await Location.getCurrentPositionAsync({});
-         console.log(location);
-         console.log('*****\n\n');
-         setLocation(location);
-      } catch (error) {
-         console.log('GET CURRENT POSITION ERROR');
-         setError(error);
-      }
-   };
-
-   // START/STOP WATCH LOCATION
-   const handleWatchPosition = async (action) => {
-      console.log('HANDLE WATCH POSITION');
-
-      switch (action) {
-         case 'start':
-            // CREATE LOCATION SUBSCRIPTION AND GET REGULAR LOCATION UPDATES
-            console.log('CREATE LOCATION SUBSCRIPTION');
-            console.log('*****\n\n');
-            // OPTIONS PASSED WHEN MAKING SUBSCRIPTION
-            let options = {
-               accuracy: Location.Accuracy.Highest,
-               timeInterval: 1000, // ms
-               distanceInterval: 1, // UPDATE EVERY METER
-               mayShowUserSettingsDialog: false, // ANDROID ONLY - REQ ADDITIONAL HARDWARE FOR BETTER ACCURACY
-            };
-            // ACTUAL SUBSCRIPTION TO LOCATION SERVICE
-            try {
-               locationSubscription.current = await Location.watchPositionAsync(
-                  options,
-                  (location) => {
-                     console.log(`LOCATION CALLBACK`);
-                     console.log(location);
-                     console.log('*****\n\n');
-                     setLocation(location);
-                     setSubscriptionActive(true);
-                  }
-               );
-            } catch (error) {
-               console.log('GET LOCATION SUBSCRIPTION ERROR');
-               setError(error);
-            }
-
-            break;
-         case 'stop':
-            // CANCEL SUBSCRIPTION AND STOP GETTING LOCATION UPDATES
-            console.log('TERMINATE LOCATION SUBSCRIPTION');
-            console.log('*****\n\n');
-            locationSubscription.current.remove();
-            setSubscriptionActive(false);
-            break;
-         default:
-            console.log('UNKNOWN ACTION');
-            break;
-      }
    };
 
    useEffect(() => {
       // REQUEST PERMISSION STATUS
-      // TODO: CONVERT TO NAMED FUNC FOR READABILITY
       (async () => {
          let { status } = await Location.requestPermissionsAsync();
          if (status !== 'granted') {
@@ -162,28 +105,15 @@ const App = () => {
                      {location && <LocationServiceComp location={location} />}
                   </DashboardView>
                   <ControlPanelView>
-                     {/* {subscriptionActive ? (
-                        <ButtonToucOpac
-                           onPress={() => handleWatchPosition('stop')}
-                        >
-                           <ButtonText type='stop'>STOP</ButtonText>
+                     {!subscriptionActive ? (
+                        <ButtonToucOpac onPress={start}>
+                           <ButtonText type='single'>START</ButtonText>
                         </ButtonToucOpac>
                      ) : (
-                        <ButtonToucOpac
-                           onPress={() => handleWatchPosition('start')}
-                        >
-                           <ButtonText type='start'>START</ButtonText>
+                        <ButtonToucOpac onPress={stop}>
+                           <ButtonText type='single'>STOP</ButtonText>
                         </ButtonToucOpac>
-                     )} */}
-                     {/* <ButtonToucOpac onPress={handleGetCurrentPosition}>
-                        <ButtonText type='single'>SINGLE READING</ButtonText>
-                     </ButtonToucOpac> */}
-                     <ButtonToucOpac onPress={start}>
-                        <ButtonText type='single'>START</ButtonText>
-                     </ButtonToucOpac>
-                     <ButtonToucOpac onPress={stop}>
-                        <ButtonText type='single'>STOP</ButtonText>
-                     </ButtonToucOpac>
+                     )}
                   </ControlPanelView>
                </>
             )}
@@ -218,8 +148,6 @@ const DashboardView = styled.View`
    align-items: center;
    height: 45%;
    width: 90%;
-   /* border: ${({ theme }) => theme.accent}; */
-   /* border-radius: 8px; */
 `;
 
 const LocationView = styled.View`
@@ -240,8 +168,6 @@ const ControlPanelView = styled.View`
    align-items: center;
    height: 45%;
    width: 90%;
-   /* border: ${({ theme }) => theme.accent}; */
-   /* border-radius: 8px; */
 `;
 
 const ButtonToucOpac = styled.TouchableOpacity`
@@ -260,4 +186,5 @@ const ButtonText = styled.Text`
    font-weight: bold;
    text-align: center;
 `;
+
 export default App;
